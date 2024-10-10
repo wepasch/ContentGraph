@@ -1,5 +1,5 @@
-from de.thb.content_graph.medium import Medium
-from de.thb.content_graph.domain.disease import Disease
+from src.de.thb.content_graph.medium import Medium
+from src.de.thb.content_graph.domain.disease import Disease
 
 class Activity:
     __uid: str
