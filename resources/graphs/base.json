@@ -1,0 +1,37 @@
+{
+	"nodes": [
+	{
+		"uid": "a",
+		"name": "A",
+		"medium": {
+			"type": "NONE",
+			"path": "NONE"
+		},
+		"disease": {
+			"name": "Depression, major, single episode",
+			"short name": "single"			
+		},
+		"required": [
+		]
+	},
+	{
+		"uid": "b",
+		"name": "B",
+		"medium": {
+			"type": "NONE",
+			"path": "NONE"
+		},
+		"disease": {
+			"name": "Depression, reactive",
+			"short name": "reactive"			
+		},
+		"required": [
+		]
+	}
+	 
+	],
+	
+	"edges": [
+	
+	]
+}
