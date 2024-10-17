@@ -1,37 +1,63 @@
 {
-	"nodes": [
-	{
-		"uid": "a",
-		"name": "A",
-		"medium": {
-			"type": "NONE",
-			"path": "NONE"
-		},
-		"disease": {
-			"name": "Depression, major, single episode",
-			"short name": "single"			
-		},
-		"required": [
-		]
-	},
-	{
-		"uid": "b",
-		"name": "B",
-		"medium": {
-			"type": "NONE",
-			"path": "NONE"
-		},
-		"disease": {
-			"name": "Depression, reactive",
-			"short name": "reactive"			
-		},
-		"required": [
-		]
-	}
-	 
-	],
-	
-	"edges": [
-	
-	]
+  "activities": [
+    {
+      "uid": "a_01",
+      "name": "Act 01",
+      "medium": "m_01",
+      "disease": "d_01",
+      "required": [
+      ]
+    },
+    {
+      "uid": "a_02",
+      "name": "Act_02",
+      "medium": "m_02",
+      "disease": "d_02",
+      "required": [
+      ]
+    },
+    {
+      "uid": "a_03",
+      "name": "Act_03",
+      "medium": "m_02",
+      "disease": "d_02",
+      "required": [
+      ]
+    },
+    {
+      "uid": "a_04",
+      "name": "Act_04",
+      "medium": "m_02",
+      "disease": "d_01",
+      "required": [
+	  "a_01"
+      ]
+    }
+  ],
+  "media": [
+    {
+      "uid": "m_01",
+      "name": "txt name",
+      "type": "t",
+      "path": "txt path"
+    },
+    {
+      "uid": "m_02",
+      "name": "audioname",
+      "type": "Audio",
+      "path": "audio path"
+    }
+  ],
+  "diseases": [
+    {
+      "uid": "d_01",
+      "name": "disease 01 with long name usw.",
+      "abbreviation": "disease 01"
+    },
+        {
+      "uid": "d_02",
+      "name": "disease 02 with long name usw.",
+      "abbreviation": "disease 02"
+    }
+  ]
 }

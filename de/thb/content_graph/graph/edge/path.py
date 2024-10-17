@@ -1,10 +1,4 @@
-from enum import Enum
-
-class PathType(Enum):
-    PREFERRED = 1
-    ACCEPTED = 2
-    FORBIDDEN = 3
-
+from de.thb.content_graph.graph.edge.type import PathType
 
 class Path:
     __uid: str
