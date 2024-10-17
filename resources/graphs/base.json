@@ -30,7 +30,7 @@
       "medium": "m_02",
       "disease": "d_01",
       "required": [
-	  "a_01"
+        "a_01"
       ]
     }
   ],
@@ -54,7 +54,7 @@
       "name": "disease 01 with long name usw.",
       "abbreviation": "disease 01"
     },
-        {
+    {
       "uid": "d_02",
       "name": "disease 02 with long name usw.",
       "abbreviation": "disease 02"

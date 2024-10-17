@@ -1,5 +1,6 @@
 from de.thb.content_graph.graph.edge.type import PathType
 
+
 class Path:
     __uid: str
     __type: PathType

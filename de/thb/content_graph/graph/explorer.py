@@ -18,9 +18,13 @@ class Explorer:
     def paths(self) -> list[list[str]]:
         return self.__paths
 
-    def move(self) -> None:
+    def naiv_move(self) -> list[list[str]]:
+        """
+        Collects all paths from start uid to end uid using only activities suitable for own disease.
+        Does not use activity twice.
+        """
         if not next(filter(lambda p: p[-1] != END_NODE_UID, self.__paths), None):
-            return
+            return self.__paths
         extended_paths: list[list[str]] = []
         path: list[str]
         for path in self.__paths:
@@ -32,11 +36,9 @@ class Explorer:
                                                                       NodeType.DISEASE, self.__disease_uid, path)
             next_stop: str
             for next_stop in next_stops:
-                required_pres: list[str] = self.__access.get_related_without(NodeType.ACTIVITY, RelationType.SUITABLE,
-                                                                             NodeType.ACTIVITY, self.__disease_uid, path)
                 extended_path: list[str] = copy.deepcopy(path + [next_stop])
                 extended_paths.append(extended_path)
         self.__paths = extended_paths
-        self.move()
+        self.naiv_move()
 
 

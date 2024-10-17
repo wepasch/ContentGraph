@@ -2,16 +2,12 @@ import config
 import logging
 
 from typing import Any
-from neo4j import GraphDatabase, Driver, Result
+from neo4j import GraphDatabase, Driver
 
 from de.thb.content_graph.graph.node.activity import Activity
-from de.thb.content_graph.graph.node.content_node import ContentNode
+from de.thb.content_graph.graph.constants import KEY_UID, KEY_MEDIUM, KEY_DISEASE, KEY_REQUIRED
 from de.thb.content_graph.graph.node.disease import Disease
-from de.thb.content_graph.graph.node.medium import Medium
-from de.thb.content_graph.graph.constants import LABEL_MEDIUM, KEY_UID, KEY_MEDIUM, KEY_DISEASE, KEY_REQUIRED, KEY_TYPE, \
-    KEY_NAME
-from de.thb.content_graph.graph.node.therapy import Therapy
-from de.thb.content_graph.graph.node.type import NodeType, MediumType, RelationType
+from de.thb.content_graph.graph.node.type import NodeType, RelationType
 from de.thb.misc.cypher_util import Query
 from de.thb.misc.util import copy_without
 
@@ -31,32 +27,23 @@ class Neo4jAccess:
                 session.run("RETURN 1")
             return True
         except Exception as e:
-            print(f"Connection failed: {e}")
+            logger.error(f"Connection failed: {e}")
             return False
 
-    def get_nodes_with(self, node: ContentNode) -> list[ContentNode]:
-        nodes: list[ContentNode] = []
-        node_type: NodeType = node.type
-        query, params = Query.get_match_node(node_type, node.json, 'n')
-        with self.__driver.session() as session:
-            results = session.run(query, params)
-            for result in results:
-                nodes.append(Neo4jAccess.__get_constr(node_type)(result['n']))
-        return nodes
-
-    def get_node_by_uid(self, uid: str) -> ContentNode:
-        pass
-
     def get_node_uids_of(self, node_type: NodeType | None) -> list:
+        """
+        :param node_type: for all nodes of type or all node in graph if type == None
+        :return: list of UIDs
+        """
         query, params = Query.get_match_node(node_type, {}, 'n')
         with self.__driver.session() as session:
             results = session.run(query, params)
             return [r['n'][KEY_UID] for r in results]
 
     def get_related_without(self, src_node_type: NodeType, rel_type: RelationType, dst_node_type: NodeType,
-                            dst_uid: str, exclude_uids: list[str], reverse: bool = False) -> list[str]:
+                            dst_uid: str, exclude_uids: list[str]) -> list[str]:
         query, params = Query.get_related_without(src_node_type, rel_type, dst_node_type, dst_uid,
-                                                  exclude_uids, 'n', reverse)
+                                                  exclude_uids, 'n')
         with self.__driver.session() as session:
             results = session.run(query, params)
             return [result['n'][KEY_UID] for result in results]
@@ -84,58 +71,34 @@ class Neo4jAccess:
         else:
             return {}
 
-    def create_medium(self, medium_data: dict) -> None:
-        type_desc: str = medium_data.get(KEY_TYPE)
-        medium_data[KEY_TYPE] = MediumType.get(type_desc).name
-        self.create_node_from_dict(medium_data, NodeType.MEDIUM)
-
     def create_disease(self, disease_data: dict) -> None:
         self.create_node_from_dict(disease_data, NodeType.DISEASE)
-
-    def create_meta_node(self, meta_data: dict) -> None:
-        self.create_node_from_dict(meta_data, NodeType.META)
-
-    def __create_node(self, node: ContentNode) -> str:
-        existing_nodes: list[ContentNode] = self.get_nodes_with(node)
-        if existing_nodes:
-            logger.info(f'Already created {node}.')
-            return existing_nodes[0].uid
-        else:
-            query, params = Query.get_create_node(node.type, node.json, 'n')
-            with self.__driver.session() as session:
-                result: Result = session.run(query, params)
-                return next(result)['n'][KEY_UID]
 
     def create_node_from_dict(self, node_data: dict[str, Any], node_type: NodeType) -> None:
         query, params = Query.get_create_node(node_type, node_data, 'n')
         with self.__driver.session() as session:
-            result: Result = session.run(query, params)
-            return next(result)['n'][KEY_UID]
+            session.run(query, params)
 
     def create_relation(self, src_uid: str, relation_type: RelationType, dst_uid: str) -> None:
-        query = Query.create_relation(src_uid, relation_type, dst_uid)
+        query, params = Query.create_relation(src_uid, relation_type, dst_uid)
         with self.__driver.session() as session:
-            session.run(query)
+            session.run(query, params)
 
     def delete_all(self) -> None:
         with self.__driver.session() as session:
             session.run("MATCH ()-[r]->() DELETE r")
             session.run("MATCH (n) DELETE n")
 
-
     @classmethod
     def get_access(cls) -> 'Neo4jAccess':
         return Neo4jAccess(config.NEO4J_URI, config.NEO4J_PORT, config.NEO4J_USER, config.NEO4J_PWD)
+
     @staticmethod
     def __get_constr(node_type: NodeType):
         match node_type:
             case NodeType.ACTIVITY:
                 return Activity.from_dict
-            case NodeType.MEDIUM:
-                return Medium.from_dict
             case NodeType.DISEASE:
                 return Disease.from_dict
-            case NodeType.THERAPY:
-                return Therapy.from_dict
             case _:
                 raise Exception(f'No constructor from dictionary for node type: {node_type}')

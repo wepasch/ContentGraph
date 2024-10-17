@@ -1,4 +1,3 @@
-from cymple.builder import QueryBuilder
 from pypher import Pypher
 
 from de.thb.content_graph.graph.constants import KEY_UID
@@ -53,27 +52,13 @@ class Query:
         return str(query), params
 
     @classmethod
-    def create_relation(cls, src_uid: str, relation_type: RelationType, dst_uid: str):
-        req = f'MATCH(s)WHERE(s.uid=\'{src_uid}\') MATCH(d)WHERE(d.uid=\'{dst_uid}\')CREATE(s)-[r:{relation_type.label}]->(d)'
-        return req
-        query = Pypher()
-        query.MATCH.node('s', uid='$src_uid')
-        query.MATCH.node('d', uid='$dst_uid')
-        query.CREATE(f'(s)-[r:{relation_type.label}]->(d)')
-        params = {'src_uid': src_uid, 'dst_uid': dst_uid}
-        return str(query), params
+    def create_relation(cls, src_uid: str, relation_type: RelationType, dst_uid: str) -> (str, dict):
+        req = (f'MATCH(s)WHERE(s.uid=\'{src_uid}\') MATCH(d)WHERE(d.uid=\'{dst_uid}\')CREATE(s)'
+               f'-[r:{relation_type.label}]->(d)')
+        return req, {}
 
     @classmethod
     def get_related_without(cls, src_type: NodeType, rel_type: RelationType, dst_node_type: NodeType, dst_uid: str,
-                            exclude_uids: list[str], ref_name: str, reverse: bool) -> (str, dict):
-        if reverse:
-            return (f'MATCH ({ref_name}:{src_type.label})<-[:{rel_type.label}]-(:{dst_node_type.label} {{{KEY_UID}:'
-                    f'\'{dst_uid}\'}}) WHERE NOT {ref_name}.{KEY_UID} IN {exclude_uids} RETURN {ref_name}'), {}
-        else:
-            return (f'MATCH ({ref_name}:{src_type.label})-[:{rel_type.label}]->(:{dst_node_type.label} {{{KEY_UID}:'
-                    f'\'{dst_uid}\'}}) WHERE NOT {ref_name}.{KEY_UID} IN {exclude_uids} RETURN {ref_name}'), {}
-
-
-    @classmethod
-    def get_from_by(cls, ):
-        pass
+                            exclude_uids: list[str], ref_name: str) -> (str, dict):
+        return (f'MATCH ({ref_name}:{src_type.label})-[:{rel_type.label}]->(:{dst_node_type.label} {{{KEY_UID}:'
+                f'\'{dst_uid}\'}}) WHERE NOT {ref_name}.{KEY_UID} IN {exclude_uids} RETURN {ref_name}'), {}

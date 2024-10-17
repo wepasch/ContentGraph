@@ -1,13 +1,8 @@
 import json
 import logging
 
-from de.thb.content_graph.graph.node.activity import Activity
-from de.thb.content_graph.graph.node.disease import Disease
-from de.thb.content_graph.graph.node.medium import Medium
-
-from de.thb.content_graph.graph.constants import KEY_NODES, KEY_NAME, KEY_MEDIA, KEY_DISEASES, KEY_ACTIVITIES, KEY_UID
-from de.thb.content_graph.graph.node.therapy import Therapy
-from de.thb.content_graph.graph.node.type import MediumType, NodeType, RelationType
+from de.thb.content_graph.graph.constants import KEY_NAME, KEY_DISEASES, KEY_ACTIVITIES, KEY_UID
+from de.thb.content_graph.graph.node.type import NodeType, RelationType
 from de.thb.content_graph.neo4j.neo4j_access import Neo4jAccess
 from de.thb.misc.util import setup_logging, get_resource
 
@@ -36,16 +31,13 @@ def main() -> None:
     access: Neo4jAccess = Neo4jAccess.get_access()
     access.delete_all()
 
-    m: dict
-    for m in graph_data[KEY_MEDIA]:
-        access.create_medium(m)
-    d: dict
-    for d in graph_data[KEY_DISEASES]:
-        access.create_disease(d)
+    disease_data: dict
+    for disease_data in graph_data[KEY_DISEASES]:
+        access.create_disease(disease_data)
     requirements: dict[str, list[str]] = {}
-    a: dict
-    for a in graph_data[KEY_ACTIVITIES]:
-        requirements = requirements | access.create_activity(a)
+    activity_data: dict
+    for activity_data in graph_data[KEY_ACTIVITIES]:
+        requirements = requirements | access.create_activity(activity_data)
 
     src: str
     dsts: list[str]
@@ -54,10 +46,6 @@ def main() -> None:
         for dst in dsts:
             access.create_relation(src, RelationType.REQUIRES, dst)
     add_start_stop(access)
-
-
-
-
 
 
 if __name__ == '__main__':
