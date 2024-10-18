@@ -1,8 +1,0 @@
-{
-  "conda": [
-    "pyyaml", "pylint"
-  ],
-   "pip": [
-    "cymple", "python_cypher"
-  ]
-}
