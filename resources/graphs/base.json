@@ -4,7 +4,7 @@
       "uid": "a_01",
       "name": "Act 01",
       "medium": "m_01",
-      "disease": "d_01",
+      "diseases": ["d_01"],
       "required": [
       ]
     },
@@ -12,52 +12,48 @@
       "uid": "a_02",
       "name": "Act_02",
       "medium": "m_02",
-      "disease": "d_02",
+      "diseases": ["d_02"],
       "required": [
       ]
     },
     {
       "uid": "a_03",
       "name": "Act_03",
-      "medium": "m_02",
-      "disease": "d_02",
+      "medium": "m_03",
+      "diseases": ["d_02"],
       "required": [
       ]
     },
     {
       "uid": "a_04",
       "name": "Act_04",
-      "medium": "m_02",
-      "disease": "d_01",
+      "medium": "m_04",
+      "diseases": ["d_01"],
       "required": [
         "a_01"
       ]
-    }
-  ],
-  "media": [
-    {
-      "uid": "m_01",
-      "name": "txt name",
-      "type": "t",
-      "path": "txt path"
     },
     {
-      "uid": "m_02",
-      "name": "audioname",
-      "type": "Audio",
-      "path": "audio path"
+      "uid": "a_05",
+      "name": "Act_05",
+      "medium": "m_05",
+      "diseases": ["d_01", "d_02"],
+      "required": ["a_01"]
     }
   ],
+
   "diseases": [
     {
       "uid": "d_01",
       "name": "disease 01 with long name usw.",
-      "abbreviation": "disease 01"
+      "abbreviation": "disease 01",
+	  "preferred": ["a_05", "m_01"]
     },
     {
       "uid": "d_02",
       "name": "disease 02 with long name usw.",
-      "abbreviation": "disease 02"
+      "abbreviation": "disease 02",
+      "preferred": ["m_00", "a_02", "a_03", "m_01"]
     }
   ]
 }

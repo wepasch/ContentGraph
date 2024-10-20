@@ -1,28 +1,24 @@
 import json
 import logging
 
-from de.thb.content_graph.graph.constants import KEY_NAME, KEY_DISEASES, KEY_ACTIVITIES, KEY_UID
+from de.thb.content_graph.graph.constants import KEY_NAME, KEY_DISEASES, KEY_ACTIVITIES, KEY_UID, KEY_REQUIRED, \
+    KEY_ABBRV, KEY_PREF, KEY_MEDIUM, KEY_DISEASE
+from de.thb.content_graph.graph.node.activity import Activity
+from de.thb.content_graph.graph.node.disease import Disease
 from de.thb.content_graph.graph.node.type import NodeType, RelationType
 from de.thb.content_graph.neo4j.neo4j_access import Neo4jAccess
+from de.thb.misc.queryobjects import QueryNode, QueryRelation
 from de.thb.misc.util import setup_logging, get_resource
 
 logger = logging.getLogger(__name__)
 
 BASE_GRAPH_PATH: str = 'graphs/base.json'
 START_NODE_UID: str = 'm_00'
-START_NODE_DATA: dict = {KEY_UID: START_NODE_UID, KEY_NAME: 'START'}
+START_NODE_DATA: dict = {KEY_UID: START_NODE_UID, KEY_NAME: 'START', KEY_REQUIRED: []}
+START_NODE: QueryNode = QueryNode(START_NODE_UID, NodeType.ACTIVITY, data=START_NODE_DATA)
 END_NODE_UID: str = 'm_01'
-END_NODE_DATA: dict = {KEY_UID: END_NODE_UID, KEY_NAME: 'END'}
-
-
-def add_start_stop(access: Neo4jAccess) -> None:
-    access.create_activity(START_NODE_DATA)
-    access.create_activity(END_NODE_DATA)
-    disease_uids: list[str] = access.get_node_uids_of(NodeType.DISEASE)
-    uid: str
-    for uid in disease_uids:
-        access.create_relation(START_NODE_UID, RelationType.SUITABLE, uid)
-        access.create_relation(END_NODE_UID, RelationType.SUITABLE, uid)
+END_NODE_DATA: dict = {KEY_UID: END_NODE_UID, KEY_NAME: 'END', KEY_REQUIRED: []}
+END_NODE: QueryNode = QueryNode(END_NODE_UID, NodeType.ACTIVITY, data=END_NODE_DATA)
 
 
 def main() -> None:
@@ -31,21 +27,31 @@ def main() -> None:
     access: Neo4jAccess = Neo4jAccess.get_access()
     access.delete_all()
 
-    disease_data: dict
-    for disease_data in graph_data[KEY_DISEASES]:
-        access.create_disease(disease_data)
-    requirements: dict[str, list[str]] = {}
-    activity_data: dict
-    for activity_data in graph_data[KEY_ACTIVITIES]:
-        requirements = requirements | access.create_activity(activity_data)
+    diseases: list[Disease] = [Disease(d[KEY_UID], d[KEY_NAME], d[KEY_ABBRV], d.get(KEY_PREF, []))
+                               for d in graph_data[KEY_DISEASES]]
+    [access.create_node(d.query_node) for d in diseases]
+    diseases_lu: dict[str, Disease] = {d.uid: d for d in diseases}
+    disease_uids: list[str] = [d.uid for d in diseases]
 
-    src: str
-    dsts: list[str]
-    for src, dsts in requirements.items():
-        dst: str
-        for dst in dsts:
-            access.create_relation(src, RelationType.REQUIRES, dst)
-    add_start_stop(access)
+    activities: list[Activity] = ([Activity(a[KEY_UID], a[KEY_NAME], a[KEY_DISEASES], a[KEY_MEDIUM], a[KEY_REQUIRED])
+                                  for a in graph_data[KEY_ACTIVITIES]] +
+                                  [Activity(START_NODE_UID, 'START', disease_uids,  '', []),
+                                   Activity(END_NODE_UID, 'END', disease_uids, '', [])])
+    [access.create_node(a.query_node) for a in activities]
+
+    suitable: QueryRelation = QueryRelation('', RelationType.SUITABLE)
+    requires: QueryRelation = QueryRelation('', RelationType.REQUIRES)
+    activity: Activity
+    for activity in activities:
+        activity_query: QueryNode = activity.query_node
+        [access.create_relation(activity_query, suitable, diseases_lu[d].query_node) for d in activity.diseases]
+        [access.create_relation(activity_query, requires, QueryNode(a, NodeType.ACTIVITY)) for a in activity.requires]
+
+    disease: Disease
+    for disease in diseases:
+        pref_path: list[QueryNode] = [QueryNode(s, NodeType.ACTIVITY) for s in disease.preferred]
+        preferred: QueryRelation = QueryRelation('', RelationType.PREFERRED, data={KEY_DISEASE: disease.uid})
+        [access.create_relation(pref_path[i], preferred, pref_path[i + 1]) for i in range(len(pref_path) - 1)]
 
 
 if __name__ == '__main__':

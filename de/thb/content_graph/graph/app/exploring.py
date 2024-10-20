@@ -14,7 +14,7 @@ def main():
     d: str
     for d in diseases:
         explorer: Explorer = Explorer(d, access)
-        explorer.naiv_move()
+        explorer.run(require=True)
         print('\n', d)
         p: list[str]
         for p in explorer.paths:

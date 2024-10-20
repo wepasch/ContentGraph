@@ -1,14 +1,17 @@
-from de.thb.content_graph.graph.constants import KEY_NAME, KEY_ABRV, KEY_UID
+from de.thb.content_graph.graph.constants import KEY_NAME, KEY_ABBRV, KEY_PREF
 from de.thb.content_graph.graph.node.content_node import ContentNode
 from de.thb.content_graph.graph.node.type import NodeType
+from de.thb.misc.queryobjects import QueryNode
 
 
 class Disease(ContentNode):
     __abbreviation: str
+    __preferred: list[str]
 
-    def __init__(self, uid: str, name: str, abbreviation: str):
+    def __init__(self, uid: str, name: str, abbreviation: str, preferred: list[str]):
         super().__init__(uid, name)
         self.__abbreviation = abbreviation
+        self.__preferred = preferred
 
     @property
     def type(self) -> NodeType:
@@ -19,19 +22,16 @@ class Disease(ContentNode):
         return self.__abbreviation
 
     @property
-    def json(self) -> dict:
-        return super().json | {KEY_ABRV: self.__abbreviation}
+    def preferred(self) -> list[str]:
+        return self.__preferred
 
-    @staticmethod
-    def from_dict(data: dict[str: str]) -> 'Disease':
-        return Disease(data[KEY_UID], data[KEY_NAME], data[KEY_ABRV])
-
-    @staticmethod
-    def from_dicts(data: list[dict]) -> list['Disease']:
-        diseases: list[Disease] = []
-        for d in data:
-            diseases.append(Disease.from_dict(d))
-        return diseases
+    @property
+    def query_node(self) -> QueryNode:
+        return QueryNode(super().uid, NodeType.DISEASE, {
+            KEY_NAME: super().name,
+            KEY_ABBRV: self.__abbreviation,
+            KEY_PREF: self.__preferred
+        })
 
     def __repr__(self) -> str:
         return f'{super().__repr__()} ({self.__abbreviation})'

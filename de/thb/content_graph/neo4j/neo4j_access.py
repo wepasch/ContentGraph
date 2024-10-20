@@ -1,15 +1,12 @@
 import config
 import logging
 
-from typing import Any
 from neo4j import GraphDatabase, Driver
 
-from de.thb.content_graph.graph.node.activity import Activity
-from de.thb.content_graph.graph.constants import KEY_UID, KEY_MEDIUM, KEY_DISEASE, KEY_REQUIRED
-from de.thb.content_graph.graph.node.disease import Disease
-from de.thb.content_graph.graph.node.type import NodeType, RelationType
-from de.thb.misc.cypher_util import Query
-from de.thb.misc.util import copy_without
+from de.thb.content_graph.graph.constants import KEY_UID
+from de.thb.content_graph.graph.node.type import NodeType
+from de.thb.misc.cypher_util import N4Query
+from de.thb.misc.queryobjects import QueryNode, QueryRelation
 
 logger = logging.getLogger(__name__)
 
@@ -35,70 +32,51 @@ class Neo4jAccess:
         :param node_type: for all nodes of type or all node in graph if type == None
         :return: list of UIDs
         """
-        query, params = Query.get_match_node(node_type, {}, 'n')
+        query, params = N4Query.get_match_node(node_type, {}, 'n')
         with self.__driver.session() as session:
             results = session.run(query, params)
             return [r['n'][KEY_UID] for r in results]
 
-    def get_related_without(self, src_node_type: NodeType, rel_type: RelationType, dst_node_type: NodeType,
-                            dst_uid: str, exclude_uids: list[str]) -> list[str]:
-        query, params = Query.get_related_without(src_node_type, rel_type, dst_node_type, dst_uid,
-                                                  exclude_uids, 'n')
+    def get_related_exclude(self, src: QueryNode, rel: QueryRelation | None, dst: QueryNode | None,
+                            exclude_uids: list[str]) -> list[str]:
+        query = N4Query.get_related_exclude(src, rel, dst, exclude_uids, 'n')
         with self.__driver.session() as session:
-            results = session.run(query, params)
+            results = session.run(query)
             return [result['n'][KEY_UID] for result in results]
 
-    def create_activity(self, activity_data: dict) -> dict[str, list[str]]:
-        self.create_node_from_dict(copy_without(activity_data, {KEY_MEDIUM, KEY_DISEASE}), NodeType.ACTIVITY)
-        activity_uid: str = activity_data[KEY_UID]
-        required_activities: list[str] = []
-        try:
-            required_activities = activity_data.pop(KEY_REQUIRED)
-        except KeyError:
-            pass
-        try:
-            medium_uid: str = activity_data.pop(KEY_MEDIUM)
-            self.create_relation(activity_uid, RelationType.USES, medium_uid)
-        except KeyError:
-            pass
-        try:
-            disease_uid: str = activity_data.pop(KEY_DISEASE)
-            self.create_relation(activity_uid, RelationType.SUITABLE, disease_uid)
-        except KeyError:
-            pass
-        if required_activities:
-            return {activity_uid: required_activities}
-        else:
-            return {}
-
-    def create_disease(self, disease_data: dict) -> None:
-        self.create_node_from_dict(disease_data, NodeType.DISEASE)
-
-    def create_node_from_dict(self, node_data: dict[str, Any], node_type: NodeType) -> None:
-        query, params = Query.get_create_node(node_type, node_data, 'n')
+    def get_related_exclude_require(self, src: QueryNode, rel: QueryRelation | None, dst: QueryNode | None,
+                                    exclude_uids: list[str], available_uids: list[str]) -> list[str]:
+        query = N4Query.get_related_exclude_require(src, rel, dst, exclude_uids, available_uids, 'n')
         with self.__driver.session() as session:
-            session.run(query, params)
+            results = session.run(query)
+            return [result['n'][KEY_UID] for result in results]
 
-    def create_relation(self, src_uid: str, relation_type: RelationType, dst_uid: str) -> None:
-        query, params = Query.create_relation(src_uid, relation_type, dst_uid)
-        with self.__driver.session() as session:
-            session.run(query, params)
+    def create_node(self, node: QueryNode) -> None:
+        node.add_data({KEY_UID: node.uid})
+        query = N4Query.create_node(node)
+        self.__post_query(query)
+
+    def create_relation(self, src: QueryNode, rel: QueryRelation, dst: QueryNode) -> None:
+        query = N4Query.create_relation(src.uid, rel, dst.uid)
+        self.__post_query(query)
 
     def delete_all(self) -> None:
+        self.__post_queries([N4Query.delete_all_relations(), N4Query.delete_all_nodes()])
+        logger.info('Deleted full graph.')
+
+    def __post_query(self, query) -> None:
         with self.__driver.session() as session:
-            session.run("MATCH ()-[r]->() DELETE r")
-            session.run("MATCH (n) DELETE n")
+            session.run(query)
+
+    def __post_queries(self, query_params: list) -> None:
+        """
+        can be used if no return is expected
+        :param query_params: list of query-params tuple
+        """
+        with self.__driver.session() as session:
+            for query_param in query_params:
+                session.run(query_param)
 
     @classmethod
     def get_access(cls) -> 'Neo4jAccess':
         return Neo4jAccess(config.NEO4J_URI, config.NEO4J_PORT, config.NEO4J_USER, config.NEO4J_PWD)
-
-    @staticmethod
-    def __get_constr(node_type: NodeType):
-        match node_type:
-            case NodeType.ACTIVITY:
-                return Activity.from_dict
-            case NodeType.DISEASE:
-                return Disease.from_dict
-            case _:
-                raise Exception(f'No constructor from dictionary for node type: {node_type}')
