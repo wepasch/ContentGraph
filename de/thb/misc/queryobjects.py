@@ -18,6 +18,10 @@ class QueryObject:
     def data(self) -> dict:
         return self.__data
 
+    @property
+    def label(self) -> str:
+        raise NotImplementedError("no label property for 'abstract' QueryObject")
+
     def add_data(self, add_data: dict) -> None:
         self.__data.update(add_data)
 
@@ -26,20 +30,25 @@ class QueryNode(QueryObject):
     """
     record class to transfer node information in one object
     """
-    __node_type: NodeType
+    __node_type: NodeType | None
 
     def __init__(self, uid: str, node_type: NodeType | None, data=None):
         super().__init__(uid, data=data)
         self.__node_type = node_type
 
     @property
-    def node_type(self) -> NodeType:
-        return self.__node_type
+    def node_type(self) -> NodeType | None:
+        if self.__node_type:
+            return self.__node_type
+        else:
+            return None
 
     @property
-    def label(self) -> str:
-        return self.__node_type.label
-
+    def label(self) -> str | None:
+        if self.__node_type:
+            return self.__node_type.label
+        else:
+            return None
 
 class QueryRelation(QueryObject):
     """

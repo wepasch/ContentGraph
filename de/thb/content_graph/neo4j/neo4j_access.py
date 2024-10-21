@@ -1,10 +1,14 @@
 import config
 import logging
 
-from neo4j import GraphDatabase, Driver
+from neo4j import GraphDatabase, Driver, Result
 
-from de.thb.content_graph.graph.constants import KEY_UID
-from de.thb.content_graph.graph.node.type import NodeType
+from de.thb.content_graph.graph.constants import KEY_UID, KEY_MEDIUM, KEY_NAME, KEY_REQUIRED, KEY_DISEASES
+from de.thb.content_graph.graph.edge.content_relation import ContentRelation
+from de.thb.content_graph.graph.node.activity import Activity
+from de.thb.content_graph.graph.node.content_node import ContentNode
+from de.thb.content_graph.graph.node.disease import Disease
+from de.thb.content_graph.graph.node.type import NodeType, RelationType
 from de.thb.misc.cypher_util import N4Query
 from de.thb.misc.queryobjects import QueryNode, QueryRelation
 
@@ -27,6 +31,13 @@ class Neo4jAccess:
             logger.error(f"Connection failed: {e}")
             return False
 
+    def get_node_like(self, node: QueryNode) -> list[ContentNode]:
+        query = N4Query.get_node_like(node, 'n')
+        with self.__driver.session() as session:
+            results = session.run(query)
+            r: Result
+            return [self.activity_from_uid(r.data()['n'][KEY_UID]) for r in results]
+
     def get_node_uids_of(self, node_type: NodeType | None) -> list:
         """
         :param node_type: for all nodes of type or all node in graph if type == None
@@ -38,15 +49,16 @@ class Neo4jAccess:
             return [r['n'][KEY_UID] for r in results]
 
     def get_related_exclude(self, src: QueryNode, rel: QueryRelation | None, dst: QueryNode | None,
-                            exclude_uids: list[str]) -> list[str]:
-        query = N4Query.get_related_exclude(src, rel, dst, exclude_uids, 'n')
+                            exclude_uids: list[str], reverse: bool = False) -> list[str]:
+        query = N4Query.get_related_exclude(src, rel, dst, exclude_uids, 'n', reverse)
         with self.__driver.session() as session:
             results = session.run(query)
             return [result['n'][KEY_UID] for result in results]
 
     def get_related_exclude_require(self, src: QueryNode, rel: QueryRelation | None, dst: QueryNode | None,
-                                    exclude_uids: list[str], available_uids: list[str]) -> list[str]:
-        query = N4Query.get_related_exclude_require(src, rel, dst, exclude_uids, available_uids, 'n')
+                                    exclude_uids: list[str], available_uids: list[str],
+                                    reverse: bool = False) -> list[str]:
+        query = N4Query.get_related_exclude_require(src, rel, dst, exclude_uids, available_uids, 'n', reverse)
         with self.__driver.session() as session:
             results = session.run(query)
             return [result['n'][KEY_UID] for result in results]
@@ -64,6 +76,9 @@ class Neo4jAccess:
         self.__post_queries([N4Query.delete_all_relations(), N4Query.delete_all_nodes()])
         logger.info('Deleted full graph.')
 
+    def activity_from_uid(self, uid: str) -> Activity:
+        pass
+
     def __post_query(self, query) -> None:
         with self.__driver.session() as session:
             session.run(query)
@@ -80,3 +95,10 @@ class Neo4jAccess:
     @classmethod
     def get_access(cls) -> 'Neo4jAccess':
         return Neo4jAccess(config.NEO4J_URI, config.NEO4J_PORT, config.NEO4J_USER, config.NEO4J_PWD)
+
+
+
+a = Neo4jAccess.get_access()
+x = a.get_related_exclude(QueryNode('', NodeType.DISEASE), QueryRelation('', RelationType.SUITABLE),
+                          QueryNode('', NodeType.ACTIVITY), [], reverse=True)
+print(x)

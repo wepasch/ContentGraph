@@ -45,7 +45,7 @@ def main() -> None:
     for activity in activities:
         activity_query: QueryNode = activity.query_node
         [access.create_relation(activity_query, suitable, diseases_lu[d].query_node) for d in activity.diseases]
-        [access.create_relation(activity_query, requires, QueryNode(a, NodeType.ACTIVITY)) for a in activity.requires]
+        [access.create_relation(activity_query, requires, QueryNode(a, NodeType.ACTIVITY)) for a in activity.required]
 
     disease: Disease
     for disease in diseases:

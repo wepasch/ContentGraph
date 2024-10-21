@@ -1,19 +1,34 @@
-from pypher import Pypher
-
 from de.thb.content_graph.graph.constants import KEY_UID, KEY_REQUIRED
 from de.thb.content_graph.graph.node.type import NodeType
-from de.thb.misc.queryobjects import QueryNode, QueryRelation
+from de.thb.misc.queryobjects import QueryNode, QueryRelation, QueryObject
 
 REF_N: str = 'n'
 REF_S: str = 's'
 REF_D: str = 'd'
 REF_R: str = 'r'
 
+REL_DIR: tuple[tuple[str, str,], tuple[str, str,],] = (('-', '->'), ('<-', '-'))
+
 
 def cypherfy_dict(d: dict[str, str | int | list[str | int]]) -> str:
     k: str
     v: str | int | list[str | int]
     return '{' + ', '.join([f'{k}: {__conv_val(v)}' for k, v in d.items()]) + '}'
+
+
+def _eval_quobject(obj: QueryObject, ref: str = '') -> str:
+    s: str = ''
+    if not obj:
+        return s
+    if ref:
+        s += ref
+    if obj.label:
+        s += f':{obj.label}'
+    if obj.uid:
+        obj.add_data({KEY_UID: obj.uid})
+    if obj.data:
+        s += f'{cypherfy_dict(obj.data)}'
+    return s
 
 
 def __conv_val(v: str | int | list[str | int]) -> str:
@@ -54,19 +69,8 @@ class N4Query:
         return 'MATCH (n) DELETE n'
 
     @classmethod
-    def get_match_node(cls, node_type: NodeType | None, data: dict, ref_name: str) -> (str, dict):
-        if not node_type:
-            return 'MATCH(n)RETURN n', {}
-        q: Pypher = Pypher()
-        q.Match.node(ref_name, labels=node_type.label)
-        where_clauses: list[str] = []
-        for k, v in data.items():
-            where_clauses.append(f'{ref_name}.{k} = ${k}')
-        if where_clauses:
-            q.WHERE(' AND '.join(where_clauses))
-        q.RETURN(ref_name)
-        params = {k: v for k, v in data.items()}
-        return str(q), params
+    def get_node_like(cls, node: QueryNode, ref: str):
+        return f'MATCH ({_eval_quobject(node, ref)}) RETURN {ref}'
 
     @classmethod
     def create_node(cls, node: QueryNode) -> str:
@@ -82,20 +86,20 @@ class N4Query:
 
     @classmethod
     def get_related_exclude(cls, src: QueryNode, rel: QueryRelation | None, dst: QueryNode | None,
-                            exclude_uids: list[str], ref_name: str):
-        rel_str: str = f'[:{rel.label}]' if rel else '[]'
-        src_str: str = f'(:{dst.label} {{{KEY_UID}:\'{dst.uid}\'}})' if dst else '()'
-        return (f'MATCH ({ref_name}:{src.label})-{rel_str}->{src_str} '
-                f'WHERE NOT {ref_name}.{KEY_UID} IN {exclude_uids} '
+                            exclude_uids: list[str], ref_name: str, reverse: bool):
+
+        return (f'MATCH ({_eval_quobject(src, ref=ref_name)})'
+                f'{REL_DIR[reverse][0]}[{_eval_quobject(rel)}]{REL_DIR[reverse][1]}'
+                f'({_eval_quobject(dst)})'
+                f'WHERE NOT {ref_name}.{KEY_UID} IN {exclude_uids}'
                 f'RETURN {ref_name}, collect(DISTINCT {ref_name})')
 
     @classmethod
     def get_related_exclude_require(cls, src: QueryNode, rel: QueryRelation | None, dst: QueryNode | None,
-                                    exclude_uids: list[str], available_uids: list[str], ref_name: str):
+                                    exclude_uids: list[str], available_uids: list[str], ref_name: str, reverse: bool):
         rel_str: str = f'[:{rel.label}]' if rel else '[]'
         src_str: str = f'(:{dst.label} {{{KEY_UID}:\'{dst.uid}\'}})' if dst else '()'
-        return (f'MATCH ({ref_name}:{src.label})-{rel_str}->{src_str} '
+        return (f'MATCH ({ref_name}:{src.label}){REL_DIR[reverse][0]}{rel_str}{REL_DIR[reverse][1]}{src_str} '
                 f'WHERE NOT {ref_name}.{KEY_UID} IN {exclude_uids} '
                 f' AND ALL(req IN {ref_name}.{KEY_REQUIRED} WHERE req IN {available_uids})'
                 f'RETURN {ref_name}, collect(DISTINCT {ref_name})')
-
