@@ -50,6 +50,7 @@ class QueryNode(QueryObject):
         else:
             return None
 
+
 class QueryRelation(QueryObject):
     """
     record class to transfer relation information in one object

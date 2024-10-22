@@ -17,7 +17,7 @@ class Activity(ContentNode):
 
     @classmethod
     def from_dict(cls, data: dict) -> 'Activity':
-        return Activity(data[KEY_UID], data[KEY_NAME], data[KEY_DISEASES], data[KKEY_MEDIUM], data[KEY_REQUIRED])
+        return Activity(data[KEY_UID], data[KEY_NAME], data[KEY_DISEASES], data[KEY_MEDIUM], data[KEY_REQUIRED])
 
     @property
     def medium(self) -> str:

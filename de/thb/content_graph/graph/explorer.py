@@ -1,5 +1,6 @@
 import copy
 
+from de.thb.content_graph.graph.node.disease import Disease
 from de.thb.content_graph.graph.node.type import RelationType, NodeType
 from de.thb.content_graph.neo4j.neo4j_access import Neo4jAccess
 from de.thb.content_graph.graph.app.init_graph import START_NODE_UID, END_NODE_UID
@@ -7,12 +8,12 @@ from de.thb.misc.queryobjects import QueryNode, QueryRelation
 
 
 class Explorer:
-    __disease_uid: str
+    __disease: Disease
     __access: Neo4jAccess
     __paths: list[list[str]] = [[START_NODE_UID]]
 
-    def __init__(self, disease_uid: str, access: Neo4jAccess):
-        self.__disease_uid = disease_uid
+    def __init__(self, disease: Disease, access: Neo4jAccess):
+        self.__disease = disease
         self.__access = access
 
     @property
@@ -46,11 +47,11 @@ class Explorer:
         if require:
             next_stops: list[str] = self.__access.get_related_exclude_require(
                 QueryNode('', NodeType.ACTIVITY), QueryRelation('', RelationType.SUITABLE),
-                QueryNode(self.__disease_uid, NodeType.DISEASE), path, path)
+                self.__disease.query_node, path, path)
         elif suitable:
             next_stops: list[str] = self.__access.get_related_exclude(
                 QueryNode('', NodeType.ACTIVITY), QueryRelation('', RelationType.SUITABLE),
-                QueryNode(self.__disease_uid, NodeType.DISEASE), path)
+                self.__disease.query_node, path)
         else:
             next_stops: list[str] = self.__access.get_related_exclude(
                 QueryNode('', NodeType.ACTIVITY), QueryRelation('', RelationType.SUITABLE), None, path)
