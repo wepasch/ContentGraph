@@ -38,9 +38,10 @@ class Wanderer:
             print('End...')
             return
 
-        all_pref: list[str] = self.__access.get_connected_by(QueryNode(position, NodeType.ACTIVITY),
-                                                              QueryRelation('', RelationType.PREFERRED,
-                                                                            data={KEY_DISEASE: self.__disease.uid}))
+        # find all preferred, not only next from position
+        all_pref: list[str] = self.__access.get_connected_by(QueryNode('', NodeType.ACTIVITY),
+                                                             QueryRelation('', RelationType.PREFERRED,
+                                                                           data={KEY_DISEASE: self.__disease.uid}))
         all_avail: list[str] = self.__access.get_related_exclude_require(
             QueryNode(position, NodeType.ACTIVITY), QueryRelation('', RelationType.SUITABLE),
             QueryNode(self.__disease.uid, NodeType.DISEASE), self.__path, self.__path)
