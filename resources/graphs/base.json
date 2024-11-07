@@ -45,13 +45,13 @@
   "diseases": [
     {
       "uid": "d_01",
-      "name": "disease 01 with long name usw.",
+      "name": "disease 01 with long name etc.",
       "abbreviation": "disease 01",
 	  "preferred": ["a_05", "m_01"]
     },
     {
       "uid": "d_02",
-      "name": "disease 02 with long name usw.",
+      "name": "disease 02 with long name",
       "abbreviation": "disease 02",
       "preferred": ["m_00", "a_02", "a_03", "m_01"]
     }

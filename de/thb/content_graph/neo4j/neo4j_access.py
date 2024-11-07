@@ -7,7 +7,7 @@ from de.thb.content_graph.graph.constants import KEY_UID
 from de.thb.content_graph.graph.node.activity import Activity
 from de.thb.content_graph.graph.node.content_node import ContentNode
 from de.thb.content_graph.graph.node.disease import Disease
-from de.thb.content_graph.graph.node.type import NodeType
+from de.thb.content_graph.graph.node.type import NodeType, RelationType
 from de.thb.misc.cypher_util import N4Query
 from de.thb.misc.queryobjects import QueryNode, QueryRelation
 
@@ -40,7 +40,7 @@ class Neo4jAccess:
             logger.error(f"Connection failed: {e}")
             return False
 
-    def get_node_like(self, node: QueryNode) -> list[ContentNode]:
+    def get_nodes_like(self, node: QueryNode) -> list[ContentNode]:
         query = N4Query.get_node_like(node, 'n')
         with self.__driver.session() as session:
             results = session.run(query)
@@ -60,6 +60,16 @@ class Neo4jAccess:
         with self.__driver.session() as session:
             results = session.run(query)
             return [result['n'][KEY_UID] for result in results]
+
+    def get_connected_by(self, src: QueryNode, rel: QueryRelation) -> list[str]:
+        query = N4Query.get_connected_by(src, rel, 'nn')
+        with self.__driver.session() as session:
+            result = [r for r in session.run(query)]
+            try:
+                return [n[KEY_UID] for n in result[-1]['nn']]
+            except IndexError:
+                return []
+
 
     def create_node(self, node: QueryNode) -> None:
         node.add_data({KEY_UID: node.uid})

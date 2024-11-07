@@ -1,4 +1,5 @@
 from de.thb.content_graph.graph.constants import KEY_UID, KEY_REQUIRED
+from de.thb.content_graph.graph.node.type import RelationType, NodeType
 from de.thb.misc.queryobjects import QueryNode, QueryRelation, QueryObject
 
 REF_N: str = 'n'
@@ -15,7 +16,7 @@ def cypherfy_dict(d: dict[str, str | int | list[str | int]]) -> str:
     return '{' + ', '.join([f'{k}: {__conv_val(v)}' for k, v in d.items()]) + '}'
 
 
-def _eval_quobject(obj: QueryObject, ref: str = '') -> str:
+def _eval_quobject(obj: QueryObject, ref: str = '', rel_all: bool = False) -> str:
     s: str = ''
     if not obj:
         return s
@@ -23,6 +24,8 @@ def _eval_quobject(obj: QueryObject, ref: str = '') -> str:
         s += ref
     if obj.label:
         s += f':{obj.label}'
+    if rel_all:
+        s += '*'
     if obj.uid:
         obj.add_data({KEY_UID: obj.uid})
     if obj.data:
@@ -102,3 +105,8 @@ class N4Query:
                 f'WHERE NOT {ref_name}.{KEY_UID} IN {exclude_uids} '
                 f' AND ALL(req IN {ref_name}.{KEY_REQUIRED} WHERE req IN {available_uids})'
                 f'RETURN {ref_name}, collect(DISTINCT {ref_name})')
+
+    @classmethod
+    def get_connected_by(cls, src: QueryNode, rel: QueryRelation, ref: str):
+        return (f'MATCH path = ({_eval_quobject(src)})-[{_eval_quobject(rel, rel_all=True)}]->(b) '
+                f'RETURN nodes(path) AS {ref}')
