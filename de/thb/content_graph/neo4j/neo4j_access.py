@@ -40,7 +40,7 @@ class Neo4jAccess:
             logger.error(f"Connection failed: {e}")
             return False
 
-    def get_nodes_like(self, node: QueryNode) -> list[ContentNode]:
+    def get_nodes_like(self, node: QueryNode) -> list[ContentNode | Activity | Disease]:
         query = N4Query.get_node_like(node, 'n')
         with self.__driver.session() as session:
             results = session.run(query)

@@ -12,7 +12,8 @@ from de.thb.misc.util import setup_logging, get_resource
 
 logger = logging.getLogger(__name__)
 
-BASE_GRAPH_PATH: str = 'graphs/base.json'
+#BASE_GRAPH_PATH: str = 'graphs/base.json'
+BASE_GRAPH_PATH: str = 'graphs/template_v003_Psymeon 11112024.json'
 START_NODE_UID: str = 'm_00'
 START_NODE_DATA: dict = {KEY_UID: START_NODE_UID, KEY_NAME: 'START', KEY_REQUIRED: []}
 START_NODE: QueryNode = QueryNode(START_NODE_UID, NodeType.ACTIVITY, data=START_NODE_DATA)

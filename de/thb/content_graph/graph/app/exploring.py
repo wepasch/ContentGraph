@@ -14,14 +14,15 @@ logger = logging.getLogger(__name__)
 def main():
     access: Neo4jAccess = Neo4jAccess.get_access()
     diseases: list[ContentNode] = access.get_nodes_like(QueryNode('', NodeType.DISEASE))
+    print('Possible paths for ')
     disease: Disease
     for disease in diseases:
         explorer: Explorer = Explorer(disease, access)
         explorer.run(require=True)
-        print('\n', disease.name)
+        print(f'\n\t{disease.name}, {disease.uid}')
         p: list[str]
         for p in explorer.paths:
-            print('\t', ' -> '.join(p))
+            print('\t\t', ' -> '.join(p))
 
 
 if __name__ == '__main__':
