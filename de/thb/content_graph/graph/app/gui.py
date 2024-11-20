@@ -21,7 +21,7 @@ FONT_MAIN: str = 'Comic Sans MS'
 TITLE: str = 'Content Graph'
 
 
-class GuiExplorer:
+class GuiWanderer:
     __window: tk.Tk
     __disease_selection: tk.StringVar
     __disease_choice: Disease = None
@@ -50,9 +50,11 @@ class GuiExplorer:
             return
         logger.info(f'Chosen disease {self.__disease_choice.name}')
         self.__window.destroy()
+        #transit to run
         self.__window = meh()
         label: tk.Label = tk.Label(self.__window, text=self.__disease_choice.name)
         label.pack()
+
 
 def meh() -> tk.Tk:
     frame: tk.Tk = tk.Tk()
@@ -63,10 +65,7 @@ def meh() -> tk.Tk:
 
 
 def main():
-    ge: GuiExplorer = GuiExplorer()
-
-
-
+    gui_wanderer: GuiWanderer = GuiWanderer()
 
 
 
