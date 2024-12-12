@@ -1,12 +1,11 @@
 import json
 import logging
-import os.path
 
 from de.thb.content_graph.graph.app.explorer import Explorer
 from de.thb.content_graph.graph.contentpath import ContentPath
 from de.thb.content_graph.graph.node.content_node import ContentNode
 from de.thb.content_graph.graph.node.disease import Disease
-from de.thb.content_graph.graph.node.type import NodeType
+from de.thb.content_graph.graph.node.node_type import NodeType
 from de.thb.content_graph.neo4j.neo4j_access import Neo4jAccess
 from de.thb.misc.queryobjects import QueryNode
 from de.thb.misc.util import setup_logging, get_resource

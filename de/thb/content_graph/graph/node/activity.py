@@ -1,6 +1,6 @@
 import logging
 from de.thb.content_graph.graph.node.content_node import ContentNode
-from de.thb.content_graph.graph.node.type import NodeType
+from de.thb.content_graph.graph.node.node_type import NodeType
 from de.thb.content_graph.graph.constants import KEY_NAME, KEY_MEDIUM, KEY_REQUIRED, KEY_DISEASES, KEY_UID, \
     KEY_DURATION_MIN
 from de.thb.misc.queryobjects import QueryNode

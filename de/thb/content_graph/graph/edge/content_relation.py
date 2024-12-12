@@ -1,4 +1,4 @@
-from de.thb.content_graph.graph.node.type import RelationType
+from de.thb.content_graph.graph.edge.relation_type import RelationType
 
 
 class ContentRelation:

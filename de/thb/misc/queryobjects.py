@@ -1,4 +1,5 @@
-from de.thb.content_graph.graph.node.type import NodeType, RelationType
+from de.thb.content_graph.graph.node.node_type import NodeType
+from de.thb.content_graph.graph.edge.relation_type import RelationType
 
 
 class QueryObject:

@@ -1,7 +1,8 @@
 import copy
 
 from de.thb.content_graph.graph.node.disease import Disease
-from de.thb.content_graph.graph.node.type import RelationType, NodeType
+from de.thb.content_graph.graph.node.node_type import NodeType
+from de.thb.content_graph.graph.edge.relation_type import RelationType
 from de.thb.content_graph.neo4j.neo4j_access import Neo4jAccess
 from de.thb.content_graph.graph.app.init_graph import START_NODE_UID, END_NODE_UID
 from de.thb.misc.queryobjects import QueryNode, QueryRelation

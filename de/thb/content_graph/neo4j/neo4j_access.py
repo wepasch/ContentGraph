@@ -7,7 +7,8 @@ from de.thb.content_graph.graph.constants import KEY_UID, KEY_DISEASES
 from de.thb.content_graph.graph.node.activity import Activity
 from de.thb.content_graph.graph.node.content_node import ContentNode
 from de.thb.content_graph.graph.node.disease import Disease
-from de.thb.content_graph.graph.node.type import NodeType, RelationType
+from de.thb.content_graph.graph.node.node_type import NodeType
+from de.thb.content_graph.graph.edge.relation_type import RelationType
 from de.thb.misc.cypher_util import N4Query
 from de.thb.misc.queryobjects import QueryNode, QueryRelation
 
@@ -61,7 +62,6 @@ class Neo4jAccess:
                 return [n[KEY_UID] for n in longest_result['nn']]
             except (IndexError, ValueError):
                 return []
-
 
     def create_node(self, node: QueryNode) -> None:
         node.add_data({KEY_UID: node.uid})

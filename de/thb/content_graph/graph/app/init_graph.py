@@ -5,7 +5,8 @@ from de.thb.content_graph.graph.constants import KEY_NAME, KEY_DISEASES, KEY_ACT
     KEY_ABBRV, KEY_PREF, KEY_MEDIUM, KEY_DISEASE, KEY_DURATION_MIN
 from de.thb.content_graph.graph.node.activity import Activity
 from de.thb.content_graph.graph.node.disease import Disease
-from de.thb.content_graph.graph.node.type import NodeType, RelationType
+from de.thb.content_graph.graph.node.node_type import NodeType
+from de.thb.content_graph.graph.edge.relation_type import RelationType
 from de.thb.content_graph.neo4j.neo4j_access import Neo4jAccess
 from de.thb.misc.queryobjects import QueryNode, QueryRelation
 from de.thb.misc.util import setup_logging, get_resource

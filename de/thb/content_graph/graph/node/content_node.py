@@ -1,5 +1,5 @@
 from de.thb.content_graph.graph.constants import KEY_NAME, KEY_UID
-from de.thb.content_graph.graph.node.type import NodeType
+from de.thb.content_graph.graph.node.node_type import NodeType
 
 
 class ContentNode:
