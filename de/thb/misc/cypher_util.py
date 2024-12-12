@@ -18,6 +18,7 @@ def cypherfy_dict(d: dict[str, str | int | list[str | int]]) -> str:
 
 def _eval_quobject(obj: QueryObject, ref: str = '', rel_all: bool = False) -> str:
     s: str = ''
+    qdata: dict = {}
     if not obj:
         return s
     if ref:
@@ -27,9 +28,10 @@ def _eval_quobject(obj: QueryObject, ref: str = '', rel_all: bool = False) -> st
     if rel_all:
         s += '*'
     if obj.uid:
-        obj.add_data({KEY_UID: obj.uid})
-    if obj.data:
-        s += f'{cypherfy_dict(obj.data)}'
+        qdata[KEY_UID] = obj.uid
+    qdata.update(obj.data)
+    if qdata:
+        s += f'{cypherfy_dict(qdata)}'
     return s
 
 

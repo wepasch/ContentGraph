@@ -12,10 +12,56 @@ MAX_TRIES: int = 3
 NOT_SET_INT: int = -1
 
 
-def _meh(num: int, s: str, emph: bool, max_pad: int = 3) -> str:
+def _right_align(num: int, s: str, emph: bool, max_pad: int = 3, new_line: bool = False) -> str:
     num_str: str = str(num)
     num_len: int = len(num_str)
-    return f'{(max_pad - (num_len + 1)) * ' '}{'*' if emph else ' '}[{num_str}]{s}'
+    return f'{(max_pad - (num_len + 1)) * ' '}{'*' if emph else ' '}[{num_str}]{s}{'\n' if new_line else ''}'
+
+
+class Choice:
+    __recommended: str | None = None
+    __further_selection: list[str]
+    __prompt: str | None
+    def __init__(self, recommended: str | None, further_selection: list[str], prompt: str | None = None):
+        self.__further_selection = further_selection
+        if recommended:
+            self.__recommended = recommended
+        self.__prompt = prompt
+
+    @property
+    def recommended(self) -> str | None:
+        return self.__recommended
+
+    @property
+    def further_selection(self) -> list[str]:
+        return self.__further_selection
+
+    @property
+    def prompt(self) -> str | None:
+        return self.__prompt
+
+    @property
+    def selection_listing(self) -> str:
+        selection: str = f'{self.prompt}\n' if self.prompt else ''
+        choice_counter: int = 1
+        if self.recommended:
+            selection += _right_align(choice_counter, f': {self.recommended}', True, max_pad=3, new_line=True)
+            choice_counter += 1
+        _next: str
+        for _next in self.further_selection:
+            selection += _right_align(choice_counter, f': {_next}', False, max_pad=3, new_line=True)
+            choice_counter += 1
+        return selection
+
+    def contains(self, uid: str) -> bool:
+        if self.recommended == uid:
+            return True
+        else:
+            return uid in self.further_selection
+
+    def __repr__(self) -> str:
+        return (f'{self.recommended if self.recommended else ''} | {', '.join(self.further_selection)} '
+                f'"{self.prompt if self.prompt else ''}"')
 
 
 class Wanderer:
@@ -31,8 +77,33 @@ class Wanderer:
     def path(self) -> list[str]:
         return self.__path
 
+    def plan(self) -> Choice:
+        position: str = self.__path[-1]
+        if position == END_NODE_UID:
+            return Choice(None, [])
+
+        # find all preferred, not only next from position
+        all_pref: list[str] = self.__access.get_connected_by(QueryNode('', NodeType.ACTIVITY),
+                                                             QueryRelation('', RelationType.PREFERRED,
+                                                                           data={KEY_DISEASE: self.__disease.uid}))
+        all_avail: list[str] = self.__access.get_related_exclude_require(
+            QueryNode(position, NodeType.ACTIVITY), QueryRelation('', RelationType.SUITABLE),
+            QueryNode(self.__disease.uid, NodeType.DISEASE), self.__path, self.__path)
+        a: str
+        pref_next: list[str] = [a for a in all_pref if a in all_avail]
+        recommendation: str | None = None if len(pref_next) == 0 else pref_next[0]
+        misc_next: list[str] = list(set(all_avail) - set(recommendation))
+        if END_NODE_UID in misc_next:
+            misc_next.remove(END_NODE_UID)
+            misc_next.append(END_NODE_UID)
+        selection: list[str] = copy.deepcopy(misc_next)
+        return Choice(recommendation, selection, None)
+
+    def step(self, next_uid: str) -> None:
+        pass
+
     def run(self) -> None:
-        print(f'\nCurrent path: {' -> '.join(self.__path)}' )
+        print(f'\nCurrent path: {' -> '.join(self.__path)}')
         position: str = self.__path[-1]
         if position == END_NODE_UID:
             print('End...')
@@ -45,8 +116,9 @@ class Wanderer:
         all_avail: list[str] = self.__access.get_related_exclude_require(
             QueryNode(position, NodeType.ACTIVITY), QueryRelation('', RelationType.SUITABLE),
             QueryNode(self.__disease.uid, NodeType.DISEASE), self.__path, self.__path)
-        pref_next: list[str] = list(filter(lambda a: a in all_avail, all_pref))
-        recom_next: str | None = None if len(pref_next) == 0 else pref_next[0]
+        a: str
+        pref_next: list[str] = [a for a in all_pref if a in all_avail]
+        recommendation: str | None = None if len(pref_next) == 0 else pref_next[0]
         misc_next: list[str] = list(set(all_avail) - set(pref_next[:1]))
         if END_NODE_UID in misc_next:
             misc_next.remove(END_NODE_UID)
@@ -55,13 +127,13 @@ class Wanderer:
 
         choice_counter: int = 1
         print('Choose next activity (*...recommended):')
-        if recom_next:
-            print(_meh(choice_counter, f': {recom_next}', True))
-            selection.insert(0, recom_next)
+        if recommendation:
+            print(_right_align(choice_counter, f': {recommendation}', True))
+            selection.insert(0, recommendation)
             choice_counter += 1
         _next: str
         for _next in misc_next:
-            print(_meh(choice_counter, f': {_next}', False))
+            print(_right_align(choice_counter, f': {_next}', False))
             choice_counter += 1
 
         choice: int = -1
@@ -87,6 +159,10 @@ class Wanderer:
         print(f'Next activity: {next_activity}')
         self.__path.append(next_activity)
         self.run()
+
+
+
+
 
 
 

@@ -2,7 +2,7 @@ import json
 import logging
 
 from de.thb.content_graph.graph.constants import KEY_NAME, KEY_DISEASES, KEY_ACTIVITIES, KEY_UID, KEY_REQUIRED, \
-    KEY_ABBRV, KEY_PREF, KEY_MEDIUM, KEY_DISEASE
+    KEY_ABBRV, KEY_PREF, KEY_MEDIUM, KEY_DISEASE, KEY_DURATION_MIN
 from de.thb.content_graph.graph.node.activity import Activity
 from de.thb.content_graph.graph.node.disease import Disease
 from de.thb.content_graph.graph.node.type import NodeType, RelationType
@@ -12,8 +12,14 @@ from de.thb.misc.util import setup_logging, get_resource
 
 logger = logging.getLogger(__name__)
 
-#BASE_GRAPH_PATH: str = 'graphs/base.json'
+# made up data
+BASE_GRAPH_PATH: str = 'graphs/base.json'
+# test data w/out require, preferred
 BASE_GRAPH_PATH: str = 'graphs/template_v003_Psymeon 11112024.json'
+# test data w/ require, preferred
+BASE_GRAPH_PATH: str = 'graphs/template_v004_Psymeon 21112024.json'
+# test data w/ durations for activities
+BASE_GRAPH_PATH: str = 'graphs/template_v004_Psymeon 23112024.json'
 START_NODE_UID: str = 'm_00'
 START_NODE_DATA: dict = {KEY_UID: START_NODE_UID, KEY_NAME: 'START', KEY_REQUIRED: []}
 START_NODE: QueryNode = QueryNode(START_NODE_UID, NodeType.ACTIVITY, data=START_NODE_DATA)
@@ -34,10 +40,13 @@ def main() -> None:
     diseases_lu: dict[str, Disease] = {d.uid: d for d in diseases}
     disease_uids: list[str] = [d.uid for d in diseases]
 
-    activities: list[Activity] = ([Activity(a[KEY_UID], a[KEY_NAME], a[KEY_DISEASES], a[KEY_MEDIUM], a[KEY_REQUIRED])
+    activities: list[Activity] = ([Activity(a[KEY_UID], a[KEY_NAME], a[KEY_DISEASES], a[KEY_MEDIUM], a[KEY_REQUIRED],
+                                            duration_min=a[KEY_DURATION_MIN])
                                   for a in graph_data[KEY_ACTIVITIES]] +
-                                  [Activity(START_NODE_UID, 'START', disease_uids,  '', []),
-                                   Activity(END_NODE_UID, 'END', disease_uids, '', [])])
+                                  [Activity(START_NODE_UID, 'START', disease_uids,  '', [],
+                                            duration_min=0),
+                                   Activity(END_NODE_UID, 'END', disease_uids, '', [],
+                                            duration_min=0)])
     [access.create_node(a.query_node) for a in activities]
 
     suitable: QueryRelation = QueryRelation('', RelationType.SUITABLE)

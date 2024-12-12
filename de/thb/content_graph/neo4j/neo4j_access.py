@@ -3,7 +3,7 @@ import logging
 
 from neo4j import GraphDatabase, Driver
 
-from de.thb.content_graph.graph.constants import KEY_UID
+from de.thb.content_graph.graph.constants import KEY_UID, KEY_DISEASES
 from de.thb.content_graph.graph.node.activity import Activity
 from de.thb.content_graph.graph.node.content_node import ContentNode
 from de.thb.content_graph.graph.node.disease import Disease
@@ -12,16 +12,6 @@ from de.thb.misc.cypher_util import N4Query
 from de.thb.misc.queryobjects import QueryNode, QueryRelation
 
 logger = logging.getLogger(__name__)
-
-
-def _node_from_dict(data: dict, node_type: NodeType) -> ContentNode:
-    match node_type:
-        case NodeType.ACTIVITY:
-            return Activity.from_dict(data)
-        case NodeType.DISEASE:
-            return Disease.from_dict(data)
-        case _:
-            raise ValueError(f'unknown node type {node_type} to create ContentNode from')
 
 
 class Neo4jAccess:
@@ -42,9 +32,10 @@ class Neo4jAccess:
 
     def get_nodes_like(self, node: QueryNode) -> list[ContentNode | Activity | Disease]:
         query = N4Query.get_node_like(node, 'n')
+        access: Neo4jAccess = Neo4jAccess.get_access()
         with self.__driver.session() as session:
             results = session.run(query)
-            return [_node_from_dict(r.data()['n'], node.node_type) for r in results]
+            return [_node_from_dict(r.data()['n'], node.node_type, access=self) for r in results]
 
     def get_related_exclude(self, src: QueryNode, rel: QueryRelation | None, dst: QueryNode | None,
                             exclude_uids: list[str], reverse: bool = False) -> list[str]:
@@ -66,8 +57,9 @@ class Neo4jAccess:
         with self.__driver.session() as session:
             result = [r for r in session.run(query)]
             try:
-                return [n[KEY_UID] for n in result[-1]['nn']]
-            except IndexError:
+                longest_result = max(result, key=lambda r: len(r['nn']))
+                return [n[KEY_UID] for n in longest_result['nn']]
+            except (IndexError, ValueError):
                 return []
 
 
@@ -100,3 +92,20 @@ class Neo4jAccess:
     @classmethod
     def get_access(cls) -> 'Neo4jAccess':
         return Neo4jAccess(config.NEO4J_URI, config.NEO4J_PORT, config.NEO4J_USER, config.NEO4J_PWD)
+
+
+def _node_from_dict(data: dict, node_type: NodeType, access: Neo4jAccess = None) -> ContentNode:
+    if not access:
+        access = Neo4jAccess.get_access()
+    match node_type:
+        case NodeType.ACTIVITY:
+            if KEY_DISEASES not in data:
+                data[KEY_DISEASES] = access.get_related_exclude(QueryNode('', NodeType.DISEASE),
+                                                                QueryRelation('', RelationType.SUITABLE),
+                                                                QueryNode(data[KEY_UID], NodeType.ACTIVITY),
+                                                                [], reverse=True)
+            return Activity.from_dict(data)
+        case NodeType.DISEASE:
+            return Disease.from_dict(data)
+        case _:
+            raise ValueError(f'unknown node type {node_type} to create ContentNode from')

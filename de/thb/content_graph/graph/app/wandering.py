@@ -10,6 +10,7 @@ def main():
     access: Neo4jAccess = Neo4jAccess.get_access()
     diseases: list[Disease] = access.get_nodes_like(QueryNode('', NodeType.DISEASE))
     wander: Wanderer = Wanderer(diseases[0], access)
+    print(wander.plan())
     wander.run()
 
 
