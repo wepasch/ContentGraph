@@ -42,9 +42,10 @@ def main():
         filtered_content_paths: list[ContentPath] = list(filter(lambda p: p.duration >= FILTER_TIME and
                                                                           p.activities_length >= FILTER_LENGTH,
                                                                 content_paths))
+        filtered_content_paths_data: list[dict] = [c.json for c in filtered_content_paths]
         file_name: str = f'filtered_{disease.uid}_content_paths.json'
         with open(f'{get_resource(EXPORT_PATHS_DIR)}/{file_name}', 'w') as file:
-            json.dump(content_paths_data, file)
+            json.dump(filtered_content_paths_data, file)
         logger.info(f'Found {len(filtered_content_paths)}/{len(content_paths)} paths for disease {disease.uid}.')
 
 
