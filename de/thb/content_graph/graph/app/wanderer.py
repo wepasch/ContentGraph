@@ -1,4 +1,5 @@
 import copy
+import logging
 
 from de.thb.content_graph.graph.app.init_graph import START_NODE_UID, END_NODE_UID
 from de.thb.content_graph.graph.constants import KEY_DISEASE
@@ -11,6 +12,8 @@ from de.thb.misc.queryobjects import QueryRelation, QueryNode
 MAX_TRIES: int = 3
 NOT_SET_INT: int = -1
 
+logger = logging.getLogger(__name__)
+
 
 def _right_align(num: int, s: str, emph: bool, max_pad: int = 3, new_line: bool = False) -> str:
     num_str: str = str(num)
@@ -22,6 +25,7 @@ class Choice:
     __recommended: str | None = None
     __further_selection: list[str]
     __prompt: str | None
+
     def __init__(self, recommended: str | None, further_selection: list[str], prompt: str | None = None):
         self.__further_selection = further_selection
         if recommended:
@@ -53,11 +57,29 @@ class Choice:
             choice_counter += 1
         return selection
 
+    @property
+    def given(self) -> bool:
+        return not (self.recommended is None and len(self.further_selection) == 0)
+
+    def set_prompt(self, prompt: str) -> None:
+        self.__prompt = prompt
+
     def contains(self, uid: str) -> bool:
         if self.recommended == uid:
             return True
         else:
             return uid in self.further_selection
+
+    def __getitem__(self, item: int) -> str | None:
+        if item == 1:
+            if self.recommended:
+                return self.recommended
+            else:
+                item += 1
+        if item in range(2, len(self.further_selection) + 2):
+            return self.further_selection[item - 2]
+        else:
+            return None
 
     def __repr__(self) -> str:
         return (f'{self.recommended if self.recommended else ''} | {', '.join(self.further_selection)} '
@@ -92,15 +114,16 @@ class Wanderer:
         a: str
         pref_next: list[str] = [a for a in all_pref if a in all_avail]
         recommendation: str | None = None if len(pref_next) == 0 else pref_next[0]
-        misc_next: list[str] = list(set(all_avail) - set(recommendation))
-        if END_NODE_UID in misc_next:
-            misc_next.remove(END_NODE_UID)
-            misc_next.append(END_NODE_UID)
-        selection: list[str] = copy.deepcopy(misc_next)
+        if recommendation:
+            all_avail.remove(recommendation)
+        if END_NODE_UID in all_avail:
+            all_avail.remove(END_NODE_UID)
+            all_avail.append(END_NODE_UID)
+        selection: list[str] = copy.deepcopy(all_avail)
         return Choice(recommendation, selection, None)
 
     def step(self, next_uid: str) -> None:
-        pass
+        self.path.append(next_uid)
 
     def run(self) -> None:
         print(f'\nCurrent path: {' -> '.join(self.__path)}')
