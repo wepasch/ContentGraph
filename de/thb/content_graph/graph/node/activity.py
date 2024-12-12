@@ -1,4 +1,6 @@
 import logging
+
+from de.thb.content_graph.graph.node.activity_type import ActivityType
 from de.thb.content_graph.graph.node.content_node import ContentNode
 from de.thb.content_graph.graph.node.node_type import NodeType
 from de.thb.content_graph.graph.constants import KEY_NAME, KEY_MEDIUM, KEY_REQUIRED, KEY_DISEASES, KEY_UID, \
@@ -10,6 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 class Activity(ContentNode):
+    __type: ActivityType
     __medium_info: str
     __disease_uids: list[str]
     __required: list[str] = []
@@ -18,6 +21,12 @@ class Activity(ContentNode):
     def __init__(self, uid: str, name: str, disease_uids: list[str], medium_info: str, required: list[str],
                  duration_min: int | None = None):
         super().__init__(uid, name)
+        _activity_type: ActivityType | None = next(filter(lambda t: t.label == name, ActivityType.values()), None)
+        if _activity_type is None:
+            logger.warning(f'Can not parse type for activity {uid} from name {name}. Assign meta type.')
+            self.__type = ActivityType.META
+        else:
+            self.__type = _activity_type
         self.__disease_uids = disease_uids
         self.__medium_info = medium_info
         self.__required = required
@@ -41,7 +50,7 @@ class Activity(ContentNode):
         return self.__medium_info
 
     @property
-    def type(self) -> NodeType:
+    def node_type(self) -> NodeType:
         return NodeType.ACTIVITY
 
     @property
@@ -65,6 +74,10 @@ class Activity(ContentNode):
     def duration_min(self) -> int | None:
         return self.__duration
 
+    @property
+    def type(self) -> ActivityType:
+        return self.__type
+
     def __repr__(self) -> str:
-        return (f'{super().__repr__()} {self.duration_min if self.duration_min else '?'} min. with '
+        return (f'{super().__repr__()} ({self.type.label}) {self.duration_min if self.duration_min else '?'} min. with '
                 f'{self.__medium_info if self.__medium_info else '?'}')

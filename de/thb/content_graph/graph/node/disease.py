@@ -18,7 +18,7 @@ class Disease(ContentNode):
         return Disease(data[KEY_UID], data[KEY_NAME], data[KEY_ABBRV], data[KEY_PREF])
 
     @property
-    def type(self) -> NodeType:
+    def node_type(self) -> NodeType:
         return NodeType.DISEASE
 
     @property
