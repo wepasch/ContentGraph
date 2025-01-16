@@ -22,5 +22,5 @@ loggers:
 
 
 root:
-    level: INFO
+    level: WARNING
     handlers: [console]

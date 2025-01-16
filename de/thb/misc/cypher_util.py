@@ -1,4 +1,4 @@
-from de.thb.content_graph.graph.constants import KEY_UID, KEY_REQUIRED
+from de.thb.constants import KEY_UID, KEY_REQUIRED
 from de.thb.misc.queryobjects import QueryNode, QueryRelation, QueryObject
 
 REF_N: str = 'n'

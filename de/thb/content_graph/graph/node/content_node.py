@@ -1,4 +1,4 @@
-from de.thb.content_graph.graph.constants import KEY_NAME, KEY_UID
+from de.thb.constants import KEY_NAME, KEY_UID
 from de.thb.content_graph.graph.node.node_type import NodeType
 
 

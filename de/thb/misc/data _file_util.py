@@ -1,7 +1,7 @@
 import pandas as pd
 import json
 
-from de.thb.content_graph.graph.constants import KEY_DURATION_MIN, KEY_ACTIVITIES, KEY_UID
+from de.thb.constants import KEY_DURATION_MIN, KEY_ACTIVITIES, KEY_UID
 from de.thb.misc.util import get_resource
 
 SRC_PATH: str = 'graphs/template_v004_Psymeon 21112024.json'

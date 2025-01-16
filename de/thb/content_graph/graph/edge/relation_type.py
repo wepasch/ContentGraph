@@ -10,6 +10,7 @@ class RelationType(Enum):
     REQUIRES = 'requires'
     SUITABLE = 'suitable'
     PREFERRED = 'preferred'
+    IS_A = 'is_a'
 
     @property
     def label(self) -> str:

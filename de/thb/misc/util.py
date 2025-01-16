@@ -1,11 +1,10 @@
 import logging.config
+import yaml
+
 from pathlib import Path
 from typing import Any
 
-import yaml
-
 LOG_CONFIG_PATH: str = 'util/logging_config.yaml'
-
 
 def setup_logging() -> None:
     with open(get_resource(LOG_CONFIG_PATH), 'r') as f:

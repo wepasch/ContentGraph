@@ -1,4 +1,4 @@
-from de.thb.content_graph.graph.constants import KEY_NAME, KEY_ABBRV, KEY_PREF, KEY_UID
+from de.thb.constants import KEY_NAME, KEY_ABBRV, KEY_PREF, KEY_UID
 from de.thb.content_graph.graph.node.content_node import ContentNode
 from de.thb.content_graph.graph.node.node_type import NodeType
 from de.thb.misc.queryobjects import QueryNode
