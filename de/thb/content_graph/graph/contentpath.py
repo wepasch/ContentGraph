@@ -4,7 +4,7 @@ from de.thb.content_graph.graph.constants import KEY_DISEASE, KEY_ACTIVITIES, KE
 from de.thb.content_graph.graph.node.activity import Activity
 from de.thb.content_graph.graph.node.disease import Disease
 from de.thb.content_graph.graph.node.node_type import NodeType
-from de.thb.content_graph.neo4j.neo4j_access import Neo4jAccess
+from de.thb.content_graph.neo_4_j.neo4j_access import Neo4jAccess
 from de.thb.misc.queryobjects import QueryNode
 
 

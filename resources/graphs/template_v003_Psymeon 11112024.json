@@ -1,0 +1,336 @@
+{
+  "activities": [
+    {
+      "uid": "a_01",
+      "name": "Watch_Video",
+      "medium": "Depression",
+      "diseases": ["d_01"
+      ],
+      "required": [
+      ]
+    },
+    {
+      "uid": "a_02",
+      "name": "Listen_To_Audio",
+      "medium": "Depression",
+      "diseases": ["d_01"
+      ],
+      "required": [
+      ]
+    },
+    {
+      "uid": "a_03",
+      "name": "Do_Physical_Exercise",
+      "medium": "Depression",
+      "diseases": ["d_01"
+      ],
+      "required": [
+      ]
+    },
+    {
+      "uid": "a_04",
+      "name": "User_Input",
+      "medium": "Depression",
+      "diseases": ["d_01"
+      ],
+      "required": [
+      ]
+    },
+    {
+      "uid": "a_05",
+      "name": "Other_Activity",
+      "medium": "Depression",
+      "diseases": ["d_01"
+      ],
+      "required": [
+      ]
+    },
+    {
+      "uid": "a_06",
+      "name": "Watch_Video",
+      "medium": "Depression",
+      "diseases": ["d_02"
+      ],
+      "required": [
+      ]
+    },
+    {
+      "uid": "a_07",
+      "name": "Listen_To_Audio",
+      "medium": "Depression",
+      "diseases": ["d_02"
+      ],
+      "required": [
+      ]
+    },
+    {
+      "uid": "a_08",
+      "name": "Do_Physical_Exercise",
+      "medium": "Depression",
+      "diseases": ["d_02"
+      ],
+      "required": [
+      ]
+    },
+    {
+      "uid": "a_09",
+      "name": "User_Input",
+      "medium": "Depression",
+      "diseases": ["d_02"
+      ],
+      "required": [
+      ]
+    },
+    {
+      "uid": "a_10",
+      "name": "Other_Activity",
+      "medium": "Depression",
+      "diseases": ["d_02"
+      ],
+      "required": [
+      ]
+    },
+    {
+      "uid": "a_11",
+      "name": "Watch_Video",
+      "medium": "Stress",
+      "diseases": ["d_04"
+      ],
+      "required": [
+      ]
+    },
+    {
+      "uid": "a_12",
+      "name": "Listen_To_Audio",
+      "medium": "Stress",
+      "diseases": ["d_04"
+      ],
+      "required": [
+      ]
+    },
+    {
+      "uid": "a_13",
+      "name": "Do_Physical_Exercise",
+      "medium": "Stress",
+      "diseases": ["d_04"
+      ],
+      "required": [
+      ]
+    },
+    {
+      "uid": "a_14",
+      "name": "User_Input",
+      "medium": "Stress",
+      "diseases": ["d_04"
+      ],
+      "required": [
+      ]
+    },
+    {
+      "uid": "a_15",
+      "name": "Other_Activity",
+      "medium": "Stress",
+      "diseases": ["d_04"
+      ],
+      "required": [
+      ]
+    },
+    {
+      "uid": "a_16",
+      "name": "Watch_Video",
+      "medium": "Stress",
+      "diseases": ["d_05"
+      ],
+      "required": [
+      ]
+    },
+    {
+      "uid": "a_17",
+      "name": "Listen_To_Audio",
+      "medium": "Stress",
+      "diseases": ["d_05"
+      ],
+      "required": [
+      ]
+    },
+    {
+      "uid": "a_18",
+      "name": "Do_Physical_Exercise",
+      "medium": "Stress",
+      "diseases": ["d_05"
+      ],
+      "required": [
+      ]
+    },
+    {
+      "uid": "a_19",
+      "name": "User_Input",
+      "medium": "Stress",
+      "diseases": ["d_05"
+      ],
+      "required": [
+      ]
+    },
+    {
+      "uid": "a_20",
+      "name": "Other_Activity",
+      "medium": "Stress",
+      "diseases": ["d_05"
+      ],
+      "required": [
+      ]
+    },
+    {
+      "uid": "a_21",
+      "name": "Watch_Video",
+      "medium": "Burnout",
+      "diseases": ["d_07"
+      ],
+      "required": [
+      ]
+    },
+    {
+      "uid": "a_22",
+      "name": "Listen_To_Audio",
+      "medium": "Burnout",
+      "diseases": ["d_07"
+      ],
+      "required": [
+      ]
+    },
+    {
+      "uid": "a_23",
+      "name": "Do_Physical_Exercise",
+      "medium": "Burnout",
+      "diseases": ["d_07"
+      ],
+      "required": [
+      ]
+    },
+    {
+      "uid": "a_24",
+      "name": "User_Input",
+      "medium": "Burnout",
+      "diseases": ["d_07"
+      ],
+      "required": [
+      ]
+    },
+    {
+      "uid": "a_25",
+      "name": "Other_Activity",
+      "medium": "Burnout",
+      "diseases": ["d_07"
+      ],
+      "required": [
+      ]
+    },
+    {
+      "uid": "a_26",
+      "name": "Watch_Video",
+      "medium": "Burnout",
+      "diseases": ["d_08"
+      ],
+      "required": [
+      ]
+    },
+    {
+      "uid": "a_27",
+      "name": "Listen_To_Audio",
+      "medium": "Burnout",
+      "diseases": ["d_08"
+      ],
+      "required": [
+      ]
+    },
+    {
+      "uid": "a_28",
+      "name": "Do_Physical_Exercise",
+      "medium": "Burnout",
+      "diseases": ["d_08"
+      ],
+      "required": [
+      ]
+    },
+    {
+      "uid": "a_29",
+      "name": "User_Input",
+      "medium": "Burnout",
+      "diseases": ["d_08"
+      ],
+      "required": [
+      ]
+    },
+    {
+      "uid": "a_30",
+      "name": "Other_Activity",
+      "medium": "Burnout",
+      "diseases": ["d_08"
+      ],
+      "required": [
+      ]
+    }
+  ],
+  "diseases": [
+    {
+      "uid": "d_01",
+      "name": "Light_Depression",
+      "abbreviation": "disease 01",
+	  "preferred path": [] 
+    },
+    {
+      "uid": "d_02",
+      "name": "Medium_Depression",
+      "abbreviation": "disease 02",
+	  "preferred path": [] 
+    },
+    {
+      "uid": "d_03",
+      "name": "Severe_Depression",
+      "abbreviation": "disease 03",
+	  "preferred path": [] 
+    },
+    {
+      "uid": "d_04",
+      "name": "Light_Stress",
+      "abbreviation": "disease 04",
+	  "preferred path": [] 
+    },
+    {
+      "uid": "d_05",
+      "name": "Medium_Stress",
+      "abbreviation": "disease 05",
+	  "preferred path": [] 
+    },
+    {
+      "uid": "d_06",
+      "name": "Severe_Stress",
+      "abbreviation": "disease 06",
+	  "preferred path": [] 
+    },
+    {
+      "uid": "d_07",
+      "name": "Light_Burnout",
+      "abbreviation": "disease 07",
+	  "preferred path": [] 
+    },
+    {
+      "uid": "d_08",
+      "name": "Medium_Burnout",
+      "abbreviation": "disease 08",
+	  "preferred path": [] 
+    },
+    {
+      "uid": "d_09",
+      "name": "Severe_Burnout",
+      "abbreviation": "disease 09",
+	  "preferred path": [] 
+    },
+    {
+      "uid": "d_10",
+      "name": "Other_Disease",
+      "abbreviation": "disease 10",
+	  "preferred path": [] 
+    }
+  ]
+}

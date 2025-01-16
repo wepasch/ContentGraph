@@ -249,7 +249,7 @@ def show_some(delayed_score: bool = False) -> None:
 
 k: int = 24
 type_lu: dict[ActivityType, int] = {t: t.number for t in ActivityType}
-available = get_activities_from('D:\\WS_Python\\Projects\\ContentGraph\\resources\\graphs\\blank_activities_v005.json')
+available = get_activities_from('/resources/graphs/blank_activities_v005.json')
 done = random.sample(available, k)
 for d in done:
     available.remove(d)

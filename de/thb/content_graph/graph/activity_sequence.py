@@ -1,12 +1,9 @@
-import copy
-
 import numpy as np
 
 from typing import Any
 
 from de.thb.content_graph.graph.node.activity_type import ActivityTypeManager
 from de.thb.content_graph.graph.node.activity import Activity
-from de.thb.content_graph.graph.node.activity_type import ActivityType
 
 
 class OrderError(Exception):
