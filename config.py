@@ -1,0 +1,17 @@
+MIN_NOF_ACTIVITIES: int = 3
+MAX_NOF_ACTIVITIES: int = 10
+MIN_DURATION: int = 15
+MAX_DURATION: int = 30
+MAX_REC_DEPTH: int = 15
+WINDOW_SIZE: int = 5
+ACTIVITY_TYPES_PER_WINDOW: int = 3
+LIMIT_TYPE_REPETITION: int = 2
+
+NEO4J_URI: str = '127.0.0.1'
+NEO4J_PORT: int = 7999
+NEO4J_USER: str = 'neo4j'
+NEO4J_PWD: str = 'password'
+
+ES_URI: str = '127.0.0.1'
+ES_PORT: int = 9200
+ES_INDEX_NAME: str = 'content_graph'
