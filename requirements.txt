@@ -1,0 +1,6 @@
+pyyaml
+numpy
+pandas
+matplotlib
+scipy
+neo4j
