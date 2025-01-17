@@ -2,9 +2,10 @@ name: contentgraph_env
 channels:
   - anaconda
   - conda-forge
-  - default
 dependencies:
-  - pyyml
+  - pyyaml
   - numpy
   - pandas
-  - neo4j
+  - pip
+  - pip:
+      - neo4j
