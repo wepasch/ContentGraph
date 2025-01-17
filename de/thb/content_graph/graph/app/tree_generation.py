@@ -7,7 +7,7 @@ from de.thb.content_graph.graph.app.sequence_validator import SequenceValidator,
 from de.thb.content_graph.graph.node.activity import Activity
 from de.thb.content_graph.graph.node.node_type import NodeType
 from de.thb.content_graph.neo_4_j.neo4j_access import Neo4jAccess
-from de.thb.content_graph.test import find_sequences
+from de.thb.content_graph.experimentation import find_sequences
 from de.thb.misc.queryobjects import QueryNode
 from de.thb.misc.util import setup_logging
 
@@ -23,7 +23,6 @@ def main() -> None:
                                                         (MIN_DURATION, MAX_DURATION),
                                                         (ACTIVITY_TYPES_PER_WINDOW, WINDOW_SIZE),
                                                         LIMIT_TYPE_REPETITION)
-    validator_config: ValidatorConfig = ValidatorConfig((5, 5), (15, 30), (3, 5), 2)
     access: Neo4jAccess = Neo4jAccess.get_access()
     all_activities: list[Activity] = access.get_nodes_like(QueryNode('', NodeType.ACTIVITY))
     activities: list[Activity] = [a for a in all_activities if not a.type.is_meta]
@@ -35,14 +34,7 @@ def main() -> None:
     activity_sequences_rec: list[ActivitySequence] = []
     find_sequences(ActivitySequence('A', sequence_validator.manager.size), activities[:], sequence_validator, 0, activity_sequences_rec)
 
-    l1 = {'|'.join(s.activities_uids) for s in activity_sequences}
-    l2 = {'|'.join(s.activities_uids) for s in activity_sequences_rec}
-    print(l2 - l1)
-    print(len(l2 - l1))
-    print(activity_sequences_rec[-1])
-    print(activity_sequences_rec[-1].matrix)
-    print(l1)
-    print(len(activity_sequences_rec))
+    raise Exception('End of implementations ¯\_(ツ)_/¯')
 
 
 
