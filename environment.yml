@@ -6,6 +6,8 @@ dependencies:
   - pyyaml
   - numpy
   - pandas
+  - matplotlib
+  - scipy
   - pip
   - pip:
       - neo4j
